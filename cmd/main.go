@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Create a custom log handler
-	handler := sloghandler.NewLogFormatHandler(slog.LevelDebug, os.Stdout)
+	handler := sloghandler.NewLogFormatHandler(slog.LevelDebug, os.Stdout, sloghandler.DefaultTimeFormat)
 
 	// Set up the logger with the custom handler
 	logger := slog.New(handler)
