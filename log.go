@@ -51,7 +51,7 @@ func (h *LogFormatHandler) Handle(ctx context.Context, r slog.Record) error {
 	// Append record attributes
 	r.Attrs(func(a slog.Attr) bool {
 		if a.Key != "" {
-			buf.WriteString(fmt.Sprintf(" %s=%v", a.Key, a.Value))
+			fmt.Fprint(&buf, " ", a.Key, "=", a.Value)
 		}
 		return true
 	})
@@ -65,10 +65,12 @@ func (h *LogFormatHandler) Handle(ctx context.Context, r slog.Record) error {
 
 	buf.WriteString("\n")
 
+	logData := buf.Bytes() // Capture buffer content before locking
+
 	// Write the log with thread safety
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	if _, err := h.writer.Write(buf.Bytes()); err != nil {
+	if _, err := h.writer.Write(logData); err != nil {
 		return fmt.Errorf("failed to write log: %w", err)
 	}
 
@@ -91,7 +93,6 @@ func (h *LogFormatHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 		attrs:      newAttrs,
 		group:      h.group,
 		timeFormat: h.timeFormat,
-		mu:         h.mu,
 	}
 }
 
@@ -103,7 +104,6 @@ func (h *LogFormatHandler) WithGroup(name string) slog.Handler {
 		attrs:      h.attrs,
 		group:      name,
 		timeFormat: h.timeFormat,
-		mu:         h.mu,
 	}
 }
 

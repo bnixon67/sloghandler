@@ -205,3 +205,14 @@ func TestLogFormatHandler_Concurrent(t *testing.T) {
 		t.Errorf("Expected 10 log entries, got %d", len(lines))
 	}
 }
+
+func BenchmarkLogFormatHandler_Handle(b *testing.B) {
+	var buf bytes.Buffer
+	handler := NewLogFormatHandler(slog.LevelInfo, &buf, DefaultTimeFormat)
+	record := slog.NewRecord(time.Now(), slog.LevelInfo, "Benchmark log", 0)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = handler.Handle(context.Background(), record)
+	}
+}

@@ -11,3 +11,14 @@
 - **Thread-Safe Writes**: Ensures safe concurrent logging in multi-threaded applications.
 - **Customizable Attributes**: Add global attributes or group logs with a prefix.
 - **Level Filtering**: Handle logs only above a specified log level.
+
+---
+
+## Usage
+```go
+handler := sloghandler.NewLogFormatHandler(slog.LevelInfo, os.Stdout, sloghandler.DefaultTimeFormat)
+logger := slog.New(handler)
+slog.SetDefault(logger)
+
+slog.Info("Application started", slog.String("env", "production"))
+
